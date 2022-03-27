@@ -11,8 +11,13 @@ labelTrainFile = 'MNIST/DataUncompressed/train-labels.idx1-ubyte'
 imageTrainArr = idx2numpy.convert_from_file(imageTrainFile)
 labelTrainArr = idx2numpy.convert_from_file(labelTrainFile)
 
-fig = plt.figure(figsize=(12, 9))
+# Reshaped Array to Linearize Image
+# imageTrainArrReshaped = imageTrainArr.reshape(imageTrainArr.shape[0], imageTrainArr.shape[1] * imageTrainArr.shape[2] )
+# print(imageTrainArr[0])
+# print(imageTrainArrReshaped[0])
 
+# Display using matplotlib
+fig = plt.figure(figsize=(12, 9))
 for i in range(30):
     ax = fig.add_subplot(5, 6, i+1)
     ax.imshow(imageTrainArr[i], cmap=plt.get_cmap('gray'))
@@ -25,5 +30,4 @@ plt.show()
 #     cv.imshow(str(labelTrainArr[i]), imageTrainArr[i])
 #     cv.waitKey()
 #     cv.destroyAllWindows
-
 
