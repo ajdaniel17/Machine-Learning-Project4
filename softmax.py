@@ -4,6 +4,10 @@ import cv2 as cv
 import numpy as np
 import idx2numpy
 import matplotlib.pyplot as plt
+import scipy
+from scipy.special import softmax
+
+
 
 # Load Train Images and Labels Files
 imageTrainFile = 'MNIST/DataUncompressed/train-images.idx3-ubyte'
@@ -39,19 +43,46 @@ t_train =labelTrainArr #training labels
 #first, softmax function def
 y_train = np.zeros((60000, 10))
 
-#initial "guess" for w
-w = np.random.random((784,10))
+#acquiring dimensions of X_train
+m, n = X_train.shape
+#initializing loss function
+J = 0
+J_total = 0
 
-def softmax(w, X_train):
+#initializing B and rho parameters for GD w/momentum
+B = 0.9
+rho = 0.25
 
-    for j in range(10):
-        den = np.zeros(10)
-        num = np.exp(np.dot(w[: , j], X_train.transpose()))
-        for k in range(10):
-            den[k] = np.exp(np.dot(w[:,k],X_train.transpose()))
-            total_den = total_den + den[k]
-        y_train[:,j] = num / total_den
-        return y_train
+#number of iterations
+iter = 0
 
-softmax_out = softmax(w,X_train)
-print(softmax_out.ndim)
+#randomized initial "guess" for w
+w = np.random.random((n, 10))
+
+#softmax mapping of training data using initial guess for w
+y_train = softmax(X_train@w)
+
+#calculation of the loss value for this approximation
+
+
+#pulling classifiers from softmax mapping output
+y_hat = np.argmax(y_train, axis=1)
+
+#calculating loss
+for i in range (10):
+    J -= t_train*np.log10(y_train[:,i])
+
+for k in range(60000): 
+    J_total = np.sum(J[k])
+
+loss = J_total / 60000
+
+for i in range(60000):
+    grad = np.sum((y_hat[i]-t_train[i])*X_train[i,:])
+
+#gradient descent
+
+
+
+
+
