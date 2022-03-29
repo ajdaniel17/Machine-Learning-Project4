@@ -34,6 +34,8 @@ X_train = imageTrainArr.reshape(60000, 784)
 #noramlizing training data
 
 X_train = X_train / 255
+ones = np.ones(60000)
+phi_train = np.column_stack([X_train,ones.transpose()])
 
 #now, want to encode y values (i.e. classifiers)
 t_train =labelTrainArr #training labels
@@ -57,10 +59,10 @@ rho = 0.25
 iter = 0
 
 #randomized initial "guess" for w
-w = np.random.random((n, 10))
+w = np.random.random((n + 1, 10))
 
 #softmax mapping of training data using initial guess for w
-y_train = softmax(X_train@w)
+y_train = softmax(phi_train@w)
 
 #calculation of the loss value for this approximation
 
@@ -80,7 +82,7 @@ loss = J_total / 60000
 print(loss)
 
 for i in range(60000):
-    grad = np.sum((y_hat[i]-t_train[i])*X_train[i,:])
+    grad = np.sum((y_hat[i]-t_train[i])*phi_train[i,:])
 
 #gradient descent
 
