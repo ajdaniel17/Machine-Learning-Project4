@@ -79,8 +79,9 @@ for k in range(60000):
 
 loss = J_total / 60000
 
+
 for i in range(60000):
     grad = np.sum((y_hat[i]-t_train[i])*phi_train[i,:])
 
-#gradient descent
+print(loss)
 
