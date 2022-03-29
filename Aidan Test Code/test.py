@@ -3,14 +3,16 @@ import matplotlib.pyplot as plt
 import math
 import random
 
+#Make 2 sets of random data
 SIZE = 500
 D = 2
+K = 2
 class1=np.random.multivariate_normal([1,3],[[1,0],[0,1]],math.ceil(SIZE/2.0))
 class2=np.random.multivariate_normal([4,1],[[2,0],[0,1]],math.floor(SIZE/2.0))
 X = np.vstack((class1,class2))
-Y = np.hstack((np.ones(math.ceil(SIZE/2.0)),np.ones(math.floor(SIZE/2.0))*-1))
+Y = np.hstack((np.ones(math.ceil(SIZE/2.0)),np.ones(math.floor(SIZE/2.0))*0))
 
-
+#Randomize Data Order
 DataX = np.empty((0,D),float)
 DataC = np.empty((0,1),int)
 Remain = SIZE - 1
@@ -21,6 +23,16 @@ for i in range(SIZE):
     X = np.delete(X,p,0)
     Y = np.delete(Y,p,0)
     Remain = Remain - 1
+DataX = np.append(DataX,np.ones((SIZE,1)),1)
+
+DataT = np.empty((0,K),int)
+for i in range(SIZE):
+    if DataC[i] == 1:
+        DataT = np.append(DataT,np.array([[1,0]]),0)
+    elif DataC[i] == 0:
+        DataT = np.append(DataT,np.array([[0,1]]),0)
+
+#Gradient Descent Bitches
 
 
 plt.figure(1)
