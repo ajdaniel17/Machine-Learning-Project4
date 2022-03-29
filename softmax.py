@@ -71,11 +71,13 @@ y_hat = np.argmax(y_train, axis=1)
 #calculating loss
 for i in range (10):
     J -= t_train*np.log10(y_train[:,i])
+    print(J.shape)
 
 for k in range(60000): 
     J_total = np.sum(J[k])
 
 loss = J_total / 60000
+print(loss)
 
 for i in range(60000):
     grad = np.sum((y_hat[i]-t_train[i])*X_train[i,:])
