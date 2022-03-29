@@ -31,23 +31,30 @@ def normalizeAndGenerateDataMatrix(imageArr):
 
 # IN PROGRESS
 def fitModel(M, K, N, dataMatrix, T):
-    W = np.random.random(((M + 1), K))
+    W = np.zeros(((M + 1), K))
     V = np.zeros(((M + 1), K))
-    print(dataMatrix.shape)
-    print(T.shape)
+    beta = 0.9
+    learningRate = 0.01
+    # Iterations
     for i in range(0, 1000):
+        # Images
         for j in range(0, N):
-            dataMatrix = dataMatrix[j, :]
-            T = T[j, :]
-            gradient = np.dot(np.dot(W.T, dataMatrix), dataMatrix) - np.dot(T, dataMatrix)
-            print(gradient.shape)
-        # for j in range(0, N):
-        #     currentX = dataMatrix[j, :]
-        #     currentT = T[j, :]
-        #     print(sp.softmax(W.T * currentX).shape)
-        #     print(currentT.shape)
-        #     gradient = ((W.T * currentX) - currentT) * currentX
-        # print(gradient.shape)
+            currentX = dataMatrix[j, :]
+            currentT = T[j, :]
+            gradient = (((W.T * currentX).T - currentT).T * currentX).T
+            V = beta * V + (1 - beta) * gradient
+            W = W - learningRate * V
+            # print(W)
+        # print("Iteration Done")
+        # input('?')
+        # print("W\n", W)
+        yPred = sp.softmax(np.dot(dataMatrix, W))
+        print(yPred.shape)
+        loss = - np.sum(np.sum(T, axis=0) * np.log(np.sum(yPred, axis=0))) / 60000
+        print(i)
+        if(i % 100 == 0):
+            print(loss)
+        
 
 # Number of Classes
 K = 10
