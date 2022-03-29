@@ -77,12 +77,13 @@ def model(X, label, rho, c, iter):
         #model prediction and softmax mapping
         z = X_train@w + bias
         y_hat = softmax(z)
-
+        print('1',y_hat.shape)
         #one-hot encoding labels
         y_hot = one_hot(label,c)
-
+        print('2', y_hot.shape)
         #gradient descent and bias calculation
         w_gradient = (1/m)*np.dot(X_train.T, (y_hat-y_hot))
+        print("3", w_gradient.shape)
         bias_gradient = (1/m) *np.sum(y_hat-y_hot)
 
         #weight vector and bias update
