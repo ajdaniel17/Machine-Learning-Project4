@@ -38,12 +38,6 @@ for i in range(SIZE):
 #Gradient Descent Bitches
 
 W = np.random.rand((D+1),K)
-print(W)
-#Shits not converging
-#My attempt at normalization
-# np.transpose(DataX)[0] = (np.transpose(DataX)[0] - np.min(np.transpose(DataX)[0])) / (np.max(np.transpose(DataX)[0]) - np.min(np.transpose(DataX)[0]))
-# np.transpose(DataX)[1] = (np.transpose(DataX)[1] - np.min(np.transpose(DataX)[1])) / (np.max(np.transpose(DataX)[1]) - np.min(np.transpose(DataX)[1]))
-# print(DataT)
 
 maxEpochs = 500
 LR = .002
@@ -58,7 +52,9 @@ for i in range(maxEpochs):
             temp2 = (np.exp(np.matmul(np.transpose(W)[k],DataX[j][:])))/temp1
             temp3 = (temp2 - DataT[j][k]) * DataX[j][:]
             np.transpose(Sumtemp)[k] = np.transpose(np.transpose(Sumtemp)[k] + temp3)
+
     W = W - LR * Sumtemp
+
 print(W)
 X1Range = np.linspace(0, 8)
 LY = (X1Range*(W[0][1]-W[0][0])+(W[2][1]-W[2][0]))/(W[1][0]-W[1][1])
