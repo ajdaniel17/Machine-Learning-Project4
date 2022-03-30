@@ -37,12 +37,12 @@ for i in range(SIZE):
 W = np.random.rand((D+1),K)
 
 
-maxEpochs = 3000
+maxEpochs = 1000
 LR = .2
 for i in range(maxEpochs):
+    Sumtemp = np.zeros(((D+1),K))
     for j in range(SIZE):
         temp1 = 0
-        Sumtemp = np.zeros(((D+1),K))
         for k in range(K):
             temp1 += np.exp(np.matmul(np.transpose(W)[k],DataX[j][:]))
 
@@ -50,7 +50,8 @@ for i in range(maxEpochs):
             temp2 = (np.exp(np.matmul(np.transpose(W)[k],DataX[j][:])))/temp1
             temp3 = temp2 * DataX[j][:]
             np.transpose(Sumtemp)[k] = np.transpose(np.transpose(Sumtemp)[k] + temp3)
-
+    W = W - LR * Sumtemp
+    print(W)
 plt.figure(1)
 for i in range(len(DataX)):
     if DataC[i] == 1:
