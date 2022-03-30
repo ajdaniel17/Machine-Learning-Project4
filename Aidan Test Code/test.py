@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import math
 import random
 
+np.set_printoptions(threshold=np.inf)
+
+
 #Make 2 sets of random data
 SIZE = 500
 D = 2
@@ -35,10 +38,15 @@ for i in range(SIZE):
 #Gradient Descent Bitches
 
 W = np.random.rand((D+1),K)
+print(W)
+#Shits not converging
+#My attempt at normalization
+# np.transpose(DataX)[0] = (np.transpose(DataX)[0] - np.min(np.transpose(DataX)[0])) / (np.max(np.transpose(DataX)[0]) - np.min(np.transpose(DataX)[0]))
+# np.transpose(DataX)[1] = (np.transpose(DataX)[1] - np.min(np.transpose(DataX)[1])) / (np.max(np.transpose(DataX)[1]) - np.min(np.transpose(DataX)[1]))
+# print(DataT)
 
-
-maxEpochs = 1000
-LR = .2
+maxEpochs = 500
+LR = .002
 for i in range(maxEpochs):
     Sumtemp = np.zeros(((D+1),K))
     for j in range(SIZE):
@@ -48,17 +56,20 @@ for i in range(maxEpochs):
 
         for k in range(K):
             temp2 = (np.exp(np.matmul(np.transpose(W)[k],DataX[j][:])))/temp1
-            temp3 = temp2 * DataX[j][:]
+            temp3 = (temp2 - DataT[j][k]) * DataX[j][:]
             np.transpose(Sumtemp)[k] = np.transpose(np.transpose(Sumtemp)[k] + temp3)
     W = W - LR * Sumtemp
-    print(W)
+print(W)
+X1Range = np.linspace(0, 8)
+LY = (X1Range*(W[0][1]-W[0][0])+(W[2][1]-W[2][0]))/(W[1][0]-W[1][1])
+
 plt.figure(1)
 for i in range(len(DataX)):
     if DataC[i] == 1:
         plt.plot(DataX[i][0],DataX[i][1],'ro')
     else:
         plt.plot(DataX[i][0],DataX[i][1],'gs')
-
+plt.plot(X1Range,LY)
 plt.xlim([-2, 8])
 plt.ylim([-2, 6])
 plt.xlabel('x1')
