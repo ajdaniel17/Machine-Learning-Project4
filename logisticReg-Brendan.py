@@ -34,7 +34,7 @@ def fitModel(M, K, N, dataMatrix, T):
     W = np.zeros(((M + 1), K))
     V = np.zeros(((M + 1), K))
     beta = 0.9
-    learningRate = 0.01
+    learningRate = 0.05
     # Iterations
     for i in range(0, 1000):
         # Images
@@ -49,11 +49,11 @@ def fitModel(M, K, N, dataMatrix, T):
         # input('?')
         # print("W\n", W)
         yPred = sp.softmax(np.dot(dataMatrix, W))
-        print(yPred.shape)
-        loss = - np.sum(np.sum(T, axis=0) * np.log(np.sum(yPred, axis=0))) / 60000
+        #print(yPred.shape)
+        loss = -np.sum(np.sum(T, axis=0) * np.log(np.sum(yPred, axis=0))) / 60000
+        #loss = np.sum(-np.sum(T*np.log(yPred), axis=0)) / 60000
         print(i)
-        if(i % 100 == 0):
-            print(loss)
+        print(loss)
         
 
 # Number of Classes
@@ -65,6 +65,4 @@ M = imageTrainArrLinearized.shape[1]
 T = generateT(N, K, labelTrainArr)
 imageDataMatrix = normalizeAndGenerateDataMatrix(imageTrainArrLinearized)
 fitModel(M, K, N, imageDataMatrix, T)
-
-
 
