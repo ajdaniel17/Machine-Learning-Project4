@@ -38,7 +38,7 @@ for i in range(SIZE):
 #Gradient Descent Bitches
 
 W = np.random.rand((D+1),K)
-
+print(W)
 maxEpochs = 500
 LR = .002
 for i in range(maxEpochs):
