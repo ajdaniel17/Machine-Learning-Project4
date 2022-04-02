@@ -26,7 +26,7 @@ def generateT(N, K, labelArr):
 # Normalize pixel values and generate data matrix
 def normalizeAndGenerateDataMatrix(imageArr):
     imageArr = imageArr / 255
-    imageArr = (imageArr - np.mean(imageArr)) / np.std(imageArr)
+    # imageArr = (imageArr - np.mean(imageArr)) / np.std(imageArr)
     return np.insert(imageArr, imageArr.shape[1], 1, axis=1)
 
 # IN PROGRESS
@@ -34,28 +34,17 @@ def Gradient_Descent(DataX, DataT):
     start_time = time.time()
     SIZE, D = DataX.shape
     SIZE, K = DataT.shape
-    print(SIZE, D, K)
     W = np.random.rand((D),K)
-    maxEpochs = 3000
+    maxEpochs = 1000
     NE = 0
     LR = .002
     for i in range(maxEpochs):
-        Sumtemp = np.zeros(((D),K))
-        for j in range(SIZE):
-            temp1 = 0
-            for k in range(K):
-                temp1 += np.exp(np.matmul(np.transpose(W)[k],DataX[j][:]))
-
-            for k in range(K):
-                temp2 = (np.exp(np.matmul(np.transpose(W)[k],DataX[j][:])))/temp1
-                temp3 = (temp2 - DataT[j][k]) * DataX[j][:]
-                np.transpose(Sumtemp)[k] = np.transpose(np.transpose(Sumtemp)[k] + temp3)
-
-        #loss = -np.sum(np.sum(DataT, axis=0) * np.log(np.sum(temp2, axis=0))) / SIZE
-        W = W - LR * Sumtemp
+        temp1 = sp.softmax(np.dot(DataX, W))
+        gradient = np.dot(np.transpose(DataX), temp1) - np.dot(np.transpose(DataX), DataT)
+        W = W - LR * gradient
         NE += 1
     total_time = time.time() - start_time 
-    return W, NE,total_time
+    return W, NE, total_time
 
 # def fitModel(M, K, N, dataMatrix, T):
 #     W = np.zeros(((M + 1), K))
@@ -91,5 +80,8 @@ N = imageTrainArrLinearized.shape[0]
 M = imageTrainArrLinearized.shape[1]
 T = generateT(N, K, labelTrainArr)
 imageDataMatrix = normalizeAndGenerateDataMatrix(imageTrainArrLinearized)
-print(Gradient_Descent(imageDataMatrix, T))
-
+trainedModel, numIter, totalTime = Gradient_Descent(imageDataMatrix, T)
+yPred = sp.softmax(np.dot(imageDataMatrix, trainedModel))
+for i in range(0, 100):
+    print(yPred[i][0], T[i])
+    input("?")
