@@ -5,6 +5,8 @@ import idx2numpy
 import matplotlib.pyplot as plt
 import scipy.special as sp
 
+# np.set_printoptions(threshold=np.inf)
+
 # Load Train Images and Labels Files
 imageTrainFile = 'MNIST/DataUncompressed/train-images.idx3-ubyte'
 labelTrainFile = 'MNIST/DataUncompressed/train-labels.idx1-ubyte'
@@ -16,7 +18,16 @@ labelTrainArr = idx2numpy.convert_from_file(labelTrainFile)
 # Linearize images
 imageTrainArrLinearized = imageTrainArr.reshape(imageTrainArr.shape[0], imageTrainArr.shape[1] * imageTrainArr.shape[2])
 
-# Generate T array from labels array
+def softmax(z):
+    # z --> linear
+    exp = np.exp(z-np.max(z))
+
+    for i in range(len(z)):
+        exp[i] /= np.sum(exp[i])
+
+    return exp
+
+# Generate T array from labels array (One-Hot Encoding)
 def generateT(N, K, labelArr):
     T = np.zeros((N, K))
     for i in range(0, labelArr.shape[0]):
@@ -26,7 +37,7 @@ def generateT(N, K, labelArr):
 # Normalize pixel values and generate data matrix
 def normalizeAndGenerateDataMatrix(imageArr):
     imageArr = imageArr / 255
-    imageArr = (imageArr - np.mean(imageArr)) / np.std(imageArr)
+    # imageArr = (imageArr - np.mean(imageArr)) / np.std(imageArr)
     return np.insert(imageArr, imageArr.shape[1], 1, axis=1)
 
 # IN PROGRESS
@@ -34,28 +45,20 @@ def Gradient_Descent(DataX, DataT):
     start_time = time.time()
     SIZE, D = DataX.shape
     SIZE, K = DataT.shape
-    print(SIZE, D, K)
     W = np.random.rand((D),K)
-    maxEpochs = 3000
+    maxEpochs = 1000
     NE = 0
-    LR = .002
+    LR = .01
     for i in range(maxEpochs):
-        Sumtemp = np.zeros(((D),K))
-        for j in range(SIZE):
-            temp1 = 0
-            for k in range(K):
-                temp1 += np.exp(np.matmul(np.transpose(W)[k],DataX[j][:]))
-
-            for k in range(K):
-                temp2 = (np.exp(np.matmul(np.transpose(W)[k],DataX[j][:])))/temp1
-                temp3 = (temp2 - DataT[j][k]) * DataX[j][:]
-                np.transpose(Sumtemp)[k] = np.transpose(np.transpose(Sumtemp)[k] + temp3)
-
-        #loss = -np.sum(np.sum(DataT, axis=0) * np.log(np.sum(temp2, axis=0))) / SIZE
-        W = W - LR * Sumtemp
+        temp1 = softmax(np.dot(DataX, W))
+        gradient = np.dot(np.transpose(DataX), temp1) - np.dot(np.transpose(DataX), DataT)
+        W = W - LR * gradient
         NE += 1
+        if (np.linalg.norm(sp.softmax(np.dot(DataX, W)) - temp1) < 1e-8):
+            print(NE)
+            break
     total_time = time.time() - start_time 
-    return W, NE,total_time
+    return W, NE, total_time
 
 # def fitModel(M, K, N, dataMatrix, T):
 #     W = np.zeros(((M + 1), K))
@@ -91,5 +94,11 @@ N = imageTrainArrLinearized.shape[0]
 M = imageTrainArrLinearized.shape[1]
 T = generateT(N, K, labelTrainArr)
 imageDataMatrix = normalizeAndGenerateDataMatrix(imageTrainArrLinearized)
-print(Gradient_Descent(imageDataMatrix, T))
+trainedModel, numIter, totalTime = Gradient_Descent(imageDataMatrix, T)
+yPred = np.dot(imageDataMatrix, trainedModel)
+mistakes = 0
+for i in range(N):
+    if (np.argmax(yPred[i]) != np.argmax(T[i])):
+        mistakes += 1
 
+print((N - mistakes) / N)
