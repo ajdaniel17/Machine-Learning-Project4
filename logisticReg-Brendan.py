@@ -5,23 +5,16 @@ import idx2numpy
 import matplotlib.pyplot as plt
 import scipy.special as sp
 
-# np.set_printoptions(threshold=np.inf)
-
 # Load Train Images and Labels Files
 imageTrainFile = 'MNIST/DataUncompressed/train-images.idx3-ubyte'
 labelTrainFile = 'MNIST/DataUncompressed/train-labels.idx1-ubyte'
-imageTestFile = 'MNIST/DataUncompressed/test-images.idx3-ubyte'
-labelTestFile = 'MNIST/DataUncompressed/test-labels.idx1-ubyte'
 
 # Convert files to numpy arrays
 imageTrainArr = idx2numpy.convert_from_file(imageTrainFile)
 labelTrainArr = idx2numpy.convert_from_file(labelTrainFile)
-imageTestArr = idx2numpy.convert_from_file(imageTestFile)
-labelTestArr = idx2numpy.convert_from_file(labelTestFile)
 
 # Linearize images
 imageTrainArrLinearized = imageTrainArr.reshape(imageTrainArr.shape[0], imageTrainArr.shape[1] * imageTrainArr.shape[2])
-imageTestArrLinearized = imageTestArr.reshape(imageTestArr.shape[0], imageTestArr.shape[1] * imageTestArr.shape[2])
 
 # def calculateLoss(W, DataX, DataT):
 #     SIZE = DataX.shape[0]
@@ -123,13 +116,5 @@ N = imageTrainArrLinearized.shape[0]
 # Number of Features
 M = imageTrainArrLinearized.shape[1]
 T = generateT(N, K, labelTrainArr)
-TTest = generateT(10000, K, labelTestArr)
 imageDataMatrixTrain = normalizeAndGenerateDataMatrix(imageTrainArrLinearized)
 trainedModel, numIter, totalTime = Gradient_Descent(imageDataMatrixTrain, T)
-imageDataMatrixTest = normalizeAndGenerateDataMatrix(imageTestArrLinearized)
-yTest = np.dot(imageDataMatrixTest, trainedModel)
-mistakes = 0
-for i in range(10000):
-    if (np.argmax(yTest[i]) != np.argmax(TTest[i])):
-        mistakes += 1
-print((10000 - mistakes) / 10000)
