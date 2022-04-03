@@ -41,18 +41,21 @@ def accuracy(W,X,T):
     return ((SIZE - mistakes) / SIZE) * 100
 
 
+
+
 def Gradient_Descent(DataX, DataT):
     SIZE , D = DataX.shape
     SIZE , K = DataT.shape
-
+    Beta = .9
+    PrevSumtemp = np.zeros(((D),K))
     W = np.random.rand((D),K)
     print("Starting W: ")
     print(W.shape)
     maxEpochs = 500
-    LR = .1
+    LR = .5
     for i in range(maxEpochs):
         Sumtemp = np.zeros(((D),K))
-        for j in range(SIZE):
+        for j in range(1000):
             temp1 = 0
             for k in range(K):
                 temp1 += np.exp(np.matmul(np.transpose(W)[k],DataX[j][:])- np.max(np.matmul(np.transpose(W)[k],DataX[j][:])) )
@@ -62,8 +65,11 @@ def Gradient_Descent(DataX, DataT):
                 temp3 = (temp2 - DataT[j][k]) * DataX[j][:]
                 np.transpose(Sumtemp)[k] = np.transpose(np.transpose(Sumtemp)[k] + temp3)
         #print(Sumtemp)
+
+        Sumtemp = Beta*PrevSumtemp + (1.0 - Beta) * Sumtemp
         W = W - LR * Sumtemp
-        print("Epoch ", i , "Accuracy:", accuracy(W,DataX,DataT))
+        PrevSumtemp = Sumtemp
+        print("Epoch ", i , "Accuracy:", accuracy(W,DataX,DataT) )
         #print(W)
     return W
 
