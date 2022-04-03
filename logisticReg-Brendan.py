@@ -71,7 +71,7 @@ def Gradient_Descent(DataX, DataT):
     W = np.random.rand((D),K)
     maxEpochs = 1000
     NE = 0
-    LR = .1
+    LR = .01
     for i in range(maxEpochs):
         temp1 = sp.softmax(np.dot(DataX, W) - np.max(np.dot(DataX, W)), axis=1)
         gradient = np.dot(np.transpose(DataX), temp1) - np.dot(np.transpose(DataX), DataT)
@@ -84,6 +84,7 @@ def Gradient_Descent(DataX, DataT):
         #     print(NE)
         #     break
         # print("Epoch ", i,"Accuracy", accuracy(W, DataX, DataT))
+        print("Epoch ", i,"Accuracy", accuracy(W, DataX, DataT))
     total_time = time.time() - start_time 
     return W, NE, total_time
 
