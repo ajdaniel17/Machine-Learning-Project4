@@ -54,14 +54,18 @@ def Gradient_Descent(DataX, DataT):
     start_time = time.time()
     SIZE, D = DataX.shape
     SIZE, K = DataT.shape
+    Beta = .9
+    prevgradient = 0
     W = np.random.rand((D),K)
     maxEpochs = 1000
     NE = 0
-    LR = .5
+    LR = .1
     for i in range(maxEpochs):
         temp1 = sp.softmax(np.dot(DataX, W), axis=1)
         gradient = np.dot(np.transpose(DataX), temp1) - np.dot(np.transpose(DataX), DataT)
+        gradient = Beta*prevgradient + (1.0 - Beta) * gradient
         W = W - LR * gradient
+        prevgradient = gradient
         NE += 1
         if (np.linalg.norm(sp.softmax(np.dot(DataX, W), axis=1) - temp1) < 1e-6):
             print(NE)
