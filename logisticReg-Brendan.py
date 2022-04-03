@@ -27,6 +27,15 @@ def softmax(z):
 
     return exp
 
+def accuracy(W,X,T):
+    SIZE , D = X.shape
+    yPred = np.dot(X, W)
+    mistakes = 0
+    for i in range(SIZE):
+        if (np.argmax(yPred[i]) != np.argmax(T[i])):
+            mistakes += 1
+    return ((SIZE - mistakes) / SIZE) * 100
+
 # Generate T array from labels array (One-Hot Encoding)
 def generateT(N, K, labelArr):
     T = np.zeros((N, K))
@@ -50,13 +59,14 @@ def Gradient_Descent(DataX, DataT):
     NE = 0
     LR = .5
     for i in range(maxEpochs):
-        temp1 = sp.softmax(np.dot(DataX, W))
+        temp1 = sp.softmax(np.dot(DataX, W), axis=1)
         gradient = np.dot(np.transpose(DataX), temp1) - np.dot(np.transpose(DataX), DataT)
         W = W - LR * gradient
         NE += 1
-        if (np.linalg.norm(sp.softmax(np.dot(DataX, W)) - temp1) < 1e-8):
+        if (np.linalg.norm(sp.softmax(np.dot(DataX, W), axis=1) - temp1) < 1e-6):
             print(NE)
             break
+        print("Epoch ", i,"Accuracy", accuracy(W, DataX, DataT))
     total_time = time.time() - start_time 
     return W, NE, total_time
 
