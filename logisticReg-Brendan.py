@@ -67,7 +67,7 @@ def Gradient_Descent(DataX, DataT):
         W = W - LR * gradient
         prevgradient = gradient
         NE += 1
-        loss = -1.0 * (np.dot(np.transpose(DataT), np.log(temp1)).sum())
+        loss = -1.0 * (np.dot(np.transpose(np.argmax(DataT)), np.log(temp1)).sum())
         if (loss < 1e-6):
             print(NE)
             break
