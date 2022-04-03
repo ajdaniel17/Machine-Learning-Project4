@@ -10,22 +10,34 @@ import scipy.special as sp
 # Load Train Images and Labels Files
 imageTrainFile = 'MNIST/DataUncompressed/train-images.idx3-ubyte'
 labelTrainFile = 'MNIST/DataUncompressed/train-labels.idx1-ubyte'
+imageTestFile = 'MNIST/DataUncompressed/test-images.idx3-ubyte'
+labelTestFile = 'MNIST/DataUncompressed/test-labels.idx1-ubyte'
 
 # Convert files to numpy arrays
 imageTrainArr = idx2numpy.convert_from_file(imageTrainFile)
 labelTrainArr = idx2numpy.convert_from_file(labelTrainFile)
+imageTestArr = idx2numpy.convert_from_file(imageTestFile)
+labelTestArr = idx2numpy.convert_from_file(labelTestFile)
 
 # Linearize images
 imageTrainArrLinearized = imageTrainArr.reshape(imageTrainArr.shape[0], imageTrainArr.shape[1] * imageTrainArr.shape[2])
+imageTestArrLinearized = imageTestArr.reshape(imageTestArr.shape[0], imageTestArr.shape[1] * imageTestArr.shape[2])
 
-def softmax(z):
-    # z --> linear
-    exp = np.exp(z-np.max(z))
-
-    for i in range(len(z)):
-        exp[i] /= np.sum(exp[i])
-
-    return exp
+# def calculateLoss(W, DataX, DataT):
+#     SIZE = DataX.shape[0]
+#     totalLoss = 0
+#     yHat = sp.softmax(np.dot(DataX, W) - np.max(np.dot(DataX, W)), axis=1)
+#     for i in range(SIZE):
+#         # print(yHat[i])
+#         # print(np.argmax(DataT[i]))
+#         # print(yHat[i][np.argmax(DataT[i])])
+#         if (yHat[i][np.argmax(DataT[i])] == 0):
+#             loss = -1.0 * np.log10(1e-1)
+#         else:
+#             loss = -1.0 * np.log10(yHat[i][np.argmax(DataT[i])])
+#         totalLoss += loss / SIZE
+#     # loss = np.mean(-1.0 * np.log(yHat[np.arange(SIZE), labelTrainArr]))
+#     return totalLoss
 
 def accuracy(W,X,T):
     SIZE , D = X.shape
@@ -61,18 +73,21 @@ def Gradient_Descent(DataX, DataT):
     NE = 0
     LR = .1
     for i in range(maxEpochs):
-        temp1 = sp.softmax(np.dot(DataX, W), axis=1)
+        temp1 = sp.softmax(np.dot(DataX, W) - np.max(np.dot(DataX, W)), axis=1)
         gradient = np.dot(np.transpose(DataX), temp1) - np.dot(np.transpose(DataX), DataT)
         gradient = Beta*prevgradient + (1.0 - Beta) * gradient
         W = W - LR * gradient
         prevgradient = gradient
         NE += 1
-        if (np.linalg.norm(sp.softmax(np.dot(DataX, W), axis=1) - temp1) < 1e-6):
-            print(NE)
-            break
-        print("Epoch ", i,"Accuracy", accuracy(W, DataX, DataT))
+        # print(calculateLoss(W, DataX, DataT))
+        # if (np.linalg.norm(sp.softmax(np.dot(DataX, W), axis=1) - temp1) < 1e-6):
+        #     print(NE)
+        #     break
+        # print("Epoch ", i,"Accuracy", accuracy(W, DataX, DataT))
     total_time = time.time() - start_time 
     return W, NE, total_time
+
+
 
 # def fitModel(M, K, N, dataMatrix, T):
 #     W = np.zeros(((M + 1), K))
@@ -107,12 +122,13 @@ N = imageTrainArrLinearized.shape[0]
 # Number of Features
 M = imageTrainArrLinearized.shape[1]
 T = generateT(N, K, labelTrainArr)
-imageDataMatrix = normalizeAndGenerateDataMatrix(imageTrainArrLinearized)
-trainedModel, numIter, totalTime = Gradient_Descent(imageDataMatrix, T)
-yPred = np.dot(imageDataMatrix, trainedModel)
+TTest = generateT(10000, K, labelTestArr)
+imageDataMatrixTrain = normalizeAndGenerateDataMatrix(imageTrainArrLinearized)
+trainedModel, numIter, totalTime = Gradient_Descent(imageDataMatrixTrain, T)
+imageDataMatrixTest = normalizeAndGenerateDataMatrix(imageTestArrLinearized)
+yTest = np.dot(imageDataMatrixTest, trainedModel)
 mistakes = 0
-for i in range(N):
-    if (np.argmax(yPred[i]) != np.argmax(T[i])):
+for i in range(10000):
+    if (np.argmax(yTest[i]) != np.argmax(TTest[i])):
         mistakes += 1
-
-print((N - mistakes) / N)
+print((10000 - mistakes) / 10000)
