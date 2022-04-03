@@ -5,6 +5,8 @@ import idx2numpy
 import matplotlib.pyplot as plt
 import scipy.special as sp
 
+# np.set_printoptions(threshold=np.inf)
+
 # Load Train Images and Labels Files
 imageTrainFile = 'MNIST/DataUncompressed/train-images.idx3-ubyte'
 labelTrainFile = 'MNIST/DataUncompressed/train-labels.idx1-ubyte'
@@ -16,7 +18,16 @@ labelTrainArr = idx2numpy.convert_from_file(labelTrainFile)
 # Linearize images
 imageTrainArrLinearized = imageTrainArr.reshape(imageTrainArr.shape[0], imageTrainArr.shape[1] * imageTrainArr.shape[2])
 
-# Generate T array from labels array
+def softmax(z):
+    # z --> linear
+    exp = np.exp(z-np.max(z))
+
+    for i in range(len(z)):
+        exp[i] /= np.sum(exp[i])
+
+    return exp
+
+# Generate T array from labels array (One-Hot Encoding)
 def generateT(N, K, labelArr):
     T = np.zeros((N, K))
     for i in range(0, labelArr.shape[0]):
@@ -37,12 +48,15 @@ def Gradient_Descent(DataX, DataT):
     W = np.random.rand((D),K)
     maxEpochs = 1000
     NE = 0
-    LR = .002
+    LR = .01
     for i in range(maxEpochs):
-        temp1 = sp.softmax(np.dot(DataX, W))
+        temp1 = softmax(np.dot(DataX, W))
         gradient = np.dot(np.transpose(DataX), temp1) - np.dot(np.transpose(DataX), DataT)
         W = W - LR * gradient
         NE += 1
+        if (np.linalg.norm(sp.softmax(np.dot(DataX, W)) - temp1) < 1e-8):
+            print(NE)
+            break
     total_time = time.time() - start_time 
     return W, NE, total_time
 
@@ -81,7 +95,10 @@ M = imageTrainArrLinearized.shape[1]
 T = generateT(N, K, labelTrainArr)
 imageDataMatrix = normalizeAndGenerateDataMatrix(imageTrainArrLinearized)
 trainedModel, numIter, totalTime = Gradient_Descent(imageDataMatrix, T)
-yPred = sp.softmax(np.dot(imageDataMatrix, trainedModel))
-for i in range(0, 100):
-    print(yPred[i][0], T[i])
-    input("?")
+yPred = np.dot(imageDataMatrix, trainedModel)
+mistakes = 0
+for i in range(N):
+    if (np.argmax(yPred[i]) != np.argmax(T[i])):
+        mistakes += 1
+
+print((N - mistakes) / N)
