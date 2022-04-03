@@ -48,9 +48,9 @@ def Gradient_Descent(DataX, DataT):
     W = np.random.rand((D),K)
     maxEpochs = 1000
     NE = 0
-    LR = .01
+    LR = .5
     for i in range(maxEpochs):
-        temp1 = softmax(np.dot(DataX, W))
+        temp1 = sp.softmax(np.dot(DataX, W))
         gradient = np.dot(np.transpose(DataX), temp1) - np.dot(np.transpose(DataX), DataT)
         W = W - LR * gradient
         NE += 1
