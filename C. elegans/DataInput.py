@@ -1,11 +1,14 @@
 #NOTE: This takes a while, this program takes both datasets in the folders 0 and 1 and linerizes the data (in greyscale) 
+#NOTE: To Run this it took me 31 minutes
 
 import numpy as np
 import os
 from PIL import Image
 import random
 import math
+import time
 
+start_time = time.time()
 SIZE = 101*101 #Size of the images 
 
 #Load all images in Data set 0 into a list
@@ -49,6 +52,7 @@ for i in range(len(imgs)):
     Worm  = np.append(Worm,temp,0)
 print("Shape of Formatted Numpy Array: ",Worm.shape)
 
+#Stack both the Worms Data and No Worms Data
 print("Formatting Data")
 NumPic , Dim = NoWorm.shape
 X = np.vstack((NoWorm,Worm))
@@ -56,6 +60,7 @@ Y = np.hstack((np.ones(NumPic),np.ones(NumPic)*0))
 D = SIZE
 K = 2
 
+#Randomize the Order of the Data, generate DataX and DataT
 DataX = np.empty((0,D),float)
 DataT = np.empty((0,K),int)
 
@@ -76,6 +81,7 @@ for i in range((NumPic*2)):
     if i % 1000 == 0:
         print("Current Sample: " , i)
 
+#Normalize the Data, append column of 1
 DataX = DataX / 255
 DataX =  np.insert(DataX, DataX.shape[1], 1, axis=1)
 
@@ -83,6 +89,10 @@ print("Data Sucessfully Randomized and Formated")
 print(DataX.shape)
 print(DataT.shape)
 
+#Save the Data in npz format
 print("Saving Data Matrices")
 np.savez_compressed('DataX.npz', DataX)
 np.savez_compressed('DataT.npz', DataT)
+
+#Print Time it took 
+print("Total Time Elapsed:", (time.time() - start_time))
