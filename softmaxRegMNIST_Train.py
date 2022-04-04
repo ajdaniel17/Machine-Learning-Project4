@@ -56,7 +56,7 @@ def gradientDescent(DataX, DataT):
     W = np.random.rand((M),K)   # Initialize weight matrix of size (785x10) to random values
     maxEpochs = 1000            # Define max epochs (iterations) to 1000 
     NE = 0                      # Initialize number of iterations to 0
-    LR = .01                    # Define learning rate of 0.1
+    LR = .01                    # Define learning rate of 0.01
     for i in range(maxEpochs):  # For loop to iterate through epochs (iterations)
         temp1 = sp.softmax(np.dot(DataX, W) - np.max(np.dot(DataX, W)), axis=1)             # Define temp1 as softmax mapping of computed probalities with current weight matrix values
         gradient = np.dot(np.transpose(DataX), temp1) - np.dot(np.transpose(DataX), DataT)  # Calculate gradient
@@ -69,7 +69,8 @@ def gradientDescent(DataX, DataT):
         # accuracyPercentage = accuracy(W, DataX, DataT)                                      # Calculate accuracy
         # print("Epoch", NE,"- Accuracy (%) {0:.2f}" .format(accuracyPercentage), ", Loss {0:.2f}" .format(loss))  # Print Epochs, Accuracy, and Loss
         # print(np.linalg.norm(np.mean(W, axis=0) - np.mean(prevW, axis=0)))
-        if (np.linalg.norm(np.mean(W, axis=0) - np.mean(prevW, axis=0)) < 1e-2):
+        if (np.linalg.norm(np.mean(W, axis=0) - np.mean(prevW, axis=0)) < 8e-3):
+            print(accuracy(W, DataX, DataT))
             break
     total_time = time.time() - start_time                                                   # Define total time as current time - start time
     return W, NE, total_time                                                                # Return weight matrix, number of iterations, and total time taken
