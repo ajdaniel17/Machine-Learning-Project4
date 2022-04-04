@@ -4,16 +4,13 @@ import idx2numpy
 import matplotlib.pyplot as plt
 import scipy.special as sp
 
-# Load Train Images and Labels Files
-imageTrainFile = 'MNIST/DataUncompressed/train-images.idx3-ubyte'
-labelTrainFile = 'MNIST/DataUncompressed/train-labels.idx1-ubyte'
+imageTrainFile = 'MNIST/DataUncompressed/train-images.idx3-ubyte'  # Load Train Images File
+labelTrainFile = 'MNIST/DataUncompressed/train-labels.idx1-ubyte'  # Load Train Labels File
 
-# Convert files to numpy arrays
-imageTrainArr = idx2numpy.convert_from_file(imageTrainFile)
-labelTrainArr = idx2numpy.convert_from_file(labelTrainFile)
+imageTrainArr = idx2numpy.convert_from_file(imageTrainFile)  # Convert training images to numpy arrays
+labelTrainArr = idx2numpy.convert_from_file(labelTrainFile)  # Convert training labels to numpy arrays
 
-# Linearize images
-imageTrainArrLinearized = imageTrainArr.reshape(imageTrainArr.shape[0], imageTrainArr.shape[1] * imageTrainArr.shape[2])
+imageTrainArrLinearized = imageTrainArr.reshape(imageTrainArr.shape[0], imageTrainArr.shape[1] * imageTrainArr.shape[2])  # Linearize images
 
 # Calculate loss of model
 def calculateLoss(W, DataX, DataT):
@@ -21,7 +18,7 @@ def calculateLoss(W, DataX, DataT):
     totalLoss = 0          # Initialize total loss  
     yHat = sp.softmax(np.dot(DataX, W) - np.max(np.dot(DataX, W)), axis=1)  # Perform softmax mapping on computed probabilities for each class
     for i in range(SIZE):  # For loop to iterate through number of images
-        yHat[i] = np.interp(yHat[i], [0, 1], [1e-15, .99])     # Perform interpolation on yHat row to eliminate divide by zero error.
+        yHat[i] = np.interp(yHat[i], [0, 1], [.1, .99])     # Perform interpolation on yHat row to eliminate divide by zero error.
         loss = -1.0 * np.log(yHat[i][np.argmax(DataT[i])])  # Calculate loss, neglecting terms with 0 in T matrix since 0 * log(x) = 0 for computational simplicity
         totalLoss += loss                                   # Add loss for current image to total loss
     totalLoss /= float(SIZE)                                # Divide total loss by size of DataX (Number of Images)
@@ -46,39 +43,38 @@ def generateT(N, K, labelArr):
 
 # Normalize pixel values and generate data matrix
 def normalizeAndGenerateDataMatrix(imageArr):
-    imageArr = imageArr / 255  # Normalize 
-    return np.insert(imageArr, imageArr.shape[1], 1, axis=1)
+    imageArr = imageArr / 255  # Normalize pixels of images to range between 0 - 1
+    return np.insert(imageArr, imageArr.shape[1], 1, axis=1)  # Insert Column of 1's at end of each image and Return Matrix
 
 # Gradient descent with momentum function to fit model
 def gradientDescent(DataX, DataT, LabelArr):
-    start_time = time.time()
-    SIZE, D = DataX.shape
-    SIZE, K = DataT.shape
-    Beta = .9
-    prevgradient = 0
-    W = np.random.rand((D),K)
-    maxEpochs = 1000
-    NE = 0
-    LR = .01
-    for i in range(maxEpochs):
-        temp1 = sp.softmax(np.dot(DataX, W) - np.max(np.dot(DataX, W)), axis=1)
-        gradient = np.dot(np.transpose(DataX), temp1) - np.dot(np.transpose(DataX), DataT)
-        gradient = Beta * prevgradient + (1.0 - Beta) * gradient
-        W = W - LR * gradient
-        prevgradient = gradient
-        NE += 1
-        loss = calculateLoss(W, DataX, DataT)
-        accuracyPercentage = accuracy(W, DataX, DataT)
-        print("Epoch", NE,"- Accuracy (%) {0:.2f}" .format(accuracyPercentage), ", Loss {0:.2f}" .format(loss))
-    total_time = time.time() - start_time 
-    return W, NE, total_time
+    start_time = time.time()  # Define start time
+    M = DataX.shape[1]        # Define number of features (M) + 1 (785)
+    K = DataT.shape[1]        # Define number of classes (K) (10)
+    Beta = 0.9                # Define beta of 0.9
+    prevgradient = 0          # Initialize previous gradient to 0
+    W = np.random.rand((M),K) # Initialize weight matrix of size (785x10) to random values
+    maxEpochs = 1000          # Define max epochs (iterations) to 1000 
+    NE = 0                    # Initialize number of iterations to 0
+    LR = .01                  # Define learning rate of 0.1
+    for i in range(maxEpochs):  # For loop to iterate through epochs (iterations)
+        temp1 = sp.softmax(np.dot(DataX, W) - np.max(np.dot(DataX, W)), axis=1)             # Define temp1 as softmax mapping of computed probalities with current weight matrix values
+        gradient = np.dot(np.transpose(DataX), temp1) - np.dot(np.transpose(DataX), DataT)  # Calculate gradient
+        gradient = Beta * prevgradient + (1.0 - Beta) * gradient                            # Calculate gradient with momentum 
+        W = W - LR * gradient                                                               # Calculate new weight matrix
+        prevgradient = gradient                                                             # Assign previous gradient the value of current gradient
+        NE += 1                                                                             # Increment number of iterations by 1
+        loss = calculateLoss(W, DataX, DataT)                                               # Calculate loss
+        accuracyPercentage = accuracy(W, DataX, DataT)                                      # Calculate accuracy
+        print("Epoch", NE,"- Accuracy (%) {0:.2f}" .format(accuracyPercentage), ", Loss {0:.2f}" .format(loss))  # Print Epochs, Accuracy, and Loss
+        
+    total_time = time.time() - start_time                                                   # Define total time as current time - start time
+    return W, NE, total_time                                                                # Return weight matrix, number of iterations, and total time taken
 
-# Number of Classes
-K = 10
-# Number of Images
-N = imageTrainArrLinearized.shape[0]
-# Number of Features
-M = imageTrainArrLinearized.shape[1]
-T = generateT(N, K, labelTrainArr)
-imageDataMatrixTrain = normalizeAndGenerateDataMatrix(imageTrainArrLinearized)
-trainedModel, numIter, totalTime = gradientDescent(imageDataMatrixTrain, T, labelTrainArr)
+K = 10                                # Number of Classes
+N = imageTrainArrLinearized.shape[0]  # Number of Images
+M = imageTrainArrLinearized.shape[1]  # Number of Features
+T = generateT(N, K, labelTrainArr)    # Generate T Matrix from labels (one-hot encoding)
+imageDataMatrixTrain = normalizeAndGenerateDataMatrix(imageTrainArrLinearized)              # Normalize and generate data matrix from images array
+trainedModel, numIter, totalTime = gradientDescent(imageDataMatrixTrain, T, labelTrainArr)  # Fit model 
+print("Number of Iterations", numIter, "Total Time", totalTime)
