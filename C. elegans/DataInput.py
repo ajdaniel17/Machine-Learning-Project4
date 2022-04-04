@@ -76,26 +76,13 @@ for i in range((NumPic*2)):
     if i % 1000 == 0:
         print("Current Sample: " , i)
 
-#DataX = np.append(DataX,np.ones(((SIZE),1)),1)
+DataX = DataX / 255
+DataX =  np.insert(DataX, DataX.shape[1], 1, axis=1)
 
 print("Data Sucessfully Randomized and Formated")
 print(DataX.shape)
 print(DataT.shape)
 
-# D = SIZE
-# K = 2
-# W = np.random.rand((D+1),K)
-# print(W)
-# maxEpochs = 500
-# LR = .002
-# for i in range(maxEpochs):
-#     Sumtemp = np.zeros(((D+1),K))
-#     for j in range(SIZE):
-#         temp1 = 0
-#         for k in range(K):
-#             temp1 += np.exp(np.matmul(np.transpose(W)[k],DataX[j][:]))
-
-#         for k in range(K):
-#             temp2 = (np.exp(np.matmul(np.transpose(W)[k],DataX[j][:])))/temp1
-#             temp3 = (temp2 - DataT[j][k]) * DataX[j][:]
-#             np.transpose(Sumtemp)[k] = np.transpose(np.transpose(Sumtemp)[k] + temp3)
+print("Saving Data Matrices")
+np.savez_compressed('DataX.npz', DataX)
+np.savez_compressed('DataT.npz', DataT)
