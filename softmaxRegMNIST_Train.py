@@ -65,18 +65,21 @@ def gradientDescent(DataX, DataT):
         W = W - LR * gradient                                                               # Calculate new weight matrix
         prevgradient = gradient                                                             # Assign previous gradient the value of current gradient
         NE += 1                                                                             # Increment number of iterations by 1
-        loss = calculateLoss(W, DataX, DataT)                                               # Calculate loss
-        accuracyPercentage = accuracy(W, DataX, DataT)                                      # Calculate accuracy
+        # loss = calculateLoss(W, DataX, DataT)                                               # Calculate loss
+        # accuracyPercentage = accuracy(W, DataX, DataT)                                      # Calculate accuracy
         # print("Epoch", NE,"- Accuracy (%) {0:.2f}" .format(accuracyPercentage), ", Loss {0:.2f}" .format(loss))  # Print Epochs, Accuracy, and Loss
-        if (np.linalg.norm(W - prevW) < 1e-3):
+        # print(np.linalg.norm(np.mean(W, axis=0) - np.mean(prevW, axis=0)))
+        if (np.linalg.norm(np.mean(W, axis=0) - np.mean(prevW, axis=0)) < 1e-2):
             break
     total_time = time.time() - start_time                                                   # Define total time as current time - start time
     return W, NE, total_time                                                                # Return weight matrix, number of iterations, and total time taken
 
-K = 10                                # Number of Classes
-N = imageTrainArrLinearized.shape[0]  # Number of Images
-M = imageTrainArrLinearized.shape[1]  # Number of Features
-TTrain = generateT(N, K, labelTrainArr)    # Generate T Matrix from labels (one-hot encoding)
-imageDataMatrixTrain = normalizeAndGenerateDataMatrix(imageTrainArrLinearized)              # Normalize and generate data matrix from images array
+K = 10                                   # Number of Classes
+N = imageTrainArrLinearized.shape[0]     # Number of Images
+M = imageTrainArrLinearized.shape[1]     # Number of Features
+TTrain = generateT(N, K, labelTrainArr)  # Generate T Matrix from labels (one-hot encoding)
+imageDataMatrixTrain = normalizeAndGenerateDataMatrix(imageTrainArrLinearized)    # Normalize and generate data matrix from images array
 trainedModel, numIter, totalTime = gradientDescent(imageDataMatrixTrain, TTrain)  # Fit model 
 print("Number of Iterations", numIter, "Total Time", totalTime)
+np.savez_compressed('trainedModelMNIST', x=trainedModel)
+print(np.array_equal)
