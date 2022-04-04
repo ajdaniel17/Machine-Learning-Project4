@@ -91,8 +91,8 @@ print(DataT.shape)
 
 #Save the Data in npz format
 print("Saving Data Matrices")
-np.savez_compressed('DataX.npz', DataX)
-np.savez_compressed('DataT.npz', DataT)
+np.savez_compressed('DataX.npz', DataX = DataX)
+np.savez_compressed('DataT.npz', DataT = DataT)
 
 #Print Time it took 
 print("Total Time Elapsed:", (time.time() - start_time))
