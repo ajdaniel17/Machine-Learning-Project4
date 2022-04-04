@@ -1,5 +1,3 @@
-import cv2 as cv
-import numpy as np
 import idx2numpy
 import matplotlib.pyplot as plt
 
@@ -11,11 +9,6 @@ labelTrainFile = 'MNIST/DataUncompressed/train-labels.idx1-ubyte'
 imageTrainArr = idx2numpy.convert_from_file(imageTrainFile)
 labelTrainArr = idx2numpy.convert_from_file(labelTrainFile)
 
-# Reshaped Array to Linearize Image
-# imageTrainArrReshaped = imageTrainArr.reshape(imageTrainArr.shape[0], imageTrainArr.shape[1] * imageTrainArr.shape[2] )
-# print(imageTrainArr[0])
-# print(imageTrainArrReshaped[0])
-
 # Display using matplotlib
 fig = plt.figure(figsize=(12, 9))
 for i in range(30):
@@ -25,9 +18,4 @@ for i in range(30):
     plt.axis('off')
 plt.show()
 
-# Display using opencv
-# for i in range(0, imageTrainArr.size):
-#     cv.imshow(str(labelTrainArr[i]), imageTrainArr[i])
-#     cv.waitKey()
-#     cv.destroyAllWindows
 
