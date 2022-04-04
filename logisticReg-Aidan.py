@@ -36,9 +36,9 @@ def gradientDescent(DataX, DataT):
     Beta = 0.9                # Define beta of 0.9
     prevgradient = 0          # Initialize previous gradient to 0
     W = np.random.rand((M),K) # Initialize weight matrix of size (785x10) to random values
-    maxEpochs = 10000          # Define max epochs (iterations) to 1000 
+    maxEpochs = 100000          # Define max epochs (iterations) to 1000 
     NE = 0                    # Initialize number of iterations to 0
-    LR = .00001                  # Define learning rate of 0.1
+    LR = .001                  # Define learning rate of 0.1
     for i in range(maxEpochs):  # For loop to iterate through epochs (iterations)
         temp1 = sp.softmax(np.dot(DataX, W) - np.max(np.dot(DataX, W)), axis=1)             # Define temp1 as softmax mapping of computed probalities with current weight matrix values
         gradient = np.dot(np.transpose(DataX), temp1) - np.dot(np.transpose(DataX), DataT)  # Calculate gradient
@@ -64,5 +64,9 @@ DataT = data['arr_0']
 
 print(DataX.shape)
 print(DataT.shape)
-trainedModel = gradientDescent(DataX, DataT)
+W , NE ,TT = gradientDescent(DataX, DataT)
+
+print("Amount of Time Taken: ", TT)
+
+np.savez_compressed('W_CElegans.npz', W = W)
 
