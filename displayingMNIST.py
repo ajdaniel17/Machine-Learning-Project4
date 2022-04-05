@@ -11,8 +11,8 @@ labelTrainArr = idx2numpy.convert_from_file(labelTrainFile)
 
 # Display using matplotlib
 fig = plt.figure(figsize=(12, 9))
-for i in range(30):
-    ax = fig.add_subplot(5, 6, i+1)
+for i in range(16):
+    ax = fig.add_subplot(4, 4, i+1)
     ax.imshow(imageTrainArr[i], cmap=plt.get_cmap('gray'))
     ax.set_title('Label: {y}' .format(y=labelTrainArr[i]))
     plt.axis('off')
