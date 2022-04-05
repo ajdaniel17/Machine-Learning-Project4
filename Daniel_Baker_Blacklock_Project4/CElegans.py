@@ -1,14 +1,9 @@
 import numpy as np
-import os
-from PIL import Image
-from os import listdir
-from os.path import isfile, join
 import glob
-from cv2 import resizeWindow
 import cv2 as cv
 
 #INSERT PATH HERE
-path = "C:/Users/ajdan/Documents/PR-ML/Machine Learning/Project 4 ML/Machine-Learning-Project4/C. elegans/Data/0"
+path = "C:/Users/ajdan/Documents/PR-ML/Machine Learning/Project 4 ML/Machine-Learning-Project4/C. elegans/Data/1"
 
 data = np.load('W_CElegans.npz')
 
@@ -29,8 +24,11 @@ imagesResized = [cv.resize(img, dim, interpolation=cv.INTER_AREA) for img in ima
 imagesGrayscale = [cv.cvtColor(img, cv.COLOR_BGR2GRAY) for img in imagesResized]
 imagesBlurred = [cv.GaussianBlur(img, (3,3), 0) for img in imagesGrayscale]
 
+sobelx = [cv.Sobel(src=img, ddepth=cv.CV_64F, dx=1, dy=0, ksize=5) for img in imagesBlurred]
+sobely = [cv.Sobel(src=img, ddepth=cv.CV_64F, dx=0, dy=1, ksize=5) for img in imagesBlurred]
+sobelxy = [cv.Sobel(src=img, ddepth=cv.CV_64F, dx=1, dy=1, ksize=5) for img in imagesBlurred]
 
-edges = [cv.Canny(image=img, threshold1=80, threshold2=140) for img in imagesBlurred]
+edges = [cv.Canny(image=img, threshold1=60, threshold2=140) for img in imagesBlurred]
 
 
 DataX = np.empty((0,SIZE),int)
