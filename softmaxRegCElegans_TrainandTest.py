@@ -1,10 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-import random
 import time
-import cv2 as cv
-import idx2numpy
 import scipy.special as sp
 
 def shuffleData(DataX, DataT):
@@ -34,45 +31,52 @@ def calculateLoss(W, DataX, DataT):
 
 # Gradient descent with momentum function to fit model
 def gradientDescent(DataX, DataT):
-    accuracyDict ={}
     start_time = time.time()  # Define start time
     M = DataX.shape[1]        # Define number of features (M) + 1 (785)
     K = DataT.shape[1]        # Define number of classes (K) (10)
-    Beta = 0.9                # Define beta of 0.9
+    Beta = 0.85               # Define beta of 0.9
     prevgradient = 0          # Initialize previous gradient to 0
     W = np.random.rand((M),K) # Initialize weight matrix of size (785x10) to random values
     maxEpochs = 5000         # Define max epochs (iterations) to 1000 
     NE = 0                    # Initialize number of iterations to 0
-    LR = .000008                 # Define learning rate of 0.1
+    LR = .001                # Define learning rate of 0.1
     for i in range(maxEpochs):  # For loop to iterate through epochs (iterations)
         temp1 = sp.softmax(np.dot(DataX, W) - np.max(np.dot(DataX, W)), axis=1)             # Define temp1 as softmax mapping of computed probalities with current weight matrix values
         gradient = np.dot(np.transpose(DataX), temp1) - np.dot(np.transpose(DataX), DataT)  # Calculate gradient
         gradient = Beta * prevgradient + (1.0 - Beta) * gradient                            # Calculate gradient with momentum 
+        prevW = W
         W = W - LR * gradient                                                               # Calculate new weight matrix
         prevgradient = gradient                                                             # Assign previous gradient the value of current gradient
         NE += 1                                                                             # Increment number of iterations by 1
         loss = calculateLoss(W, DataX, DataT)                                               # Calculate loss
         accuracyPercentage = accuracy(W, DataX, DataT)                                      # Calculate accuracy
-        accuracyDict[str(i)] = accuracyPercentage
         print("Epoch", NE,"- Accuracy (%) {0:.2f}" .format(accuracyPercentage), ", Loss {0:.2f}" .format(loss))  # Print Epochs, Accuracy, and Loss
         DataX, DataT = shuffleData(DataX, DataT)
-    print(max(accuracyDict, key=accuracyDict.get), max(accuracyDict.values()))
+        if (np.linalg.norm(np.mean(W, axis=0) - np.mean(prevW, axis=0)) < 5e-6):
+            print(accuracy(W, DataX, DataT))
+            break
     total_time = time.time() - start_time                                                   # Define total time as current time - start time
     return W, NE, total_time                                                                # Return weight matrix, number of iterations, and total time taken
 
 
 data = np.load('DataXResized.npz')
-
 DataX = data['DataX']
-
 data = np.load('DataTResized.npz')
-
 DataT = data['DataT']
 
 print(DataX.shape)
 print(DataT.shape)
-W , NE ,TT = gradientDescent(DataX, DataT)
+DataXTrain = DataX[:math.ceil(DataX.shape[0] * 0.8)]
+DataXTest = DataX[math.ceil(DataX.shape[0] * 0.8):]
+DataTTrain = DataT[:math.ceil(DataT.shape[0] * 0.8)]
+DataTTest = DataT[math.ceil(DataX.shape[0] * 0.8):]
+print(DataXTrain.shape)
+print(DataXTest.shape)
+# W , NE ,TT = gradientDescent(DataXTrain, DataTTrain)
 
-print("Amount of Time Taken: ", TT)
+# print("Amount of Time Taken: ", TT)
 
-np.savez_compressed('W_CElegans.npz', W = W)
+# np.savez_compressed('W_CElegans.npz', W = W)
+
+trainedModel = np.load('W_CElegans.npz')['W']
+print(accuracy(trainedModel, DataXTest, DataTTest))
