@@ -70,7 +70,7 @@ def gradientDescent(DataX, DataT):
         W = W - LR * gradient                                                               # Calculate new weight matrix
         prevgradient = gradient                                                             # Assign previous gradient the value of current gradient
         NE += 1                                                                             # Increment number of iterations by 1
-        if (np.linalg.norm(np.mean(W, axis=0) - np.mean(prevW, axis=0)) < 8e-3):            # If weight vector is not changing,
+        if (np.linalg.norm(np.mean(W, axis=0) - np.mean(prevW, axis=0)) < 8e-3):            # If weight vector is not changing greatly,
             break                                                                           # break loop
     total_time = time.time() - start_time                                                   # Define total time as current time - start time
     return W, NE, total_time                                                                # Return weight matrix, number of iterations, and total time taken
