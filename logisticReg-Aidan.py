@@ -7,6 +7,10 @@ import cv2 as cv
 import idx2numpy
 import scipy.special as sp
 
+def shuffleData(DataX, DataT):
+    p = np.random.permutation(DataX.shape[0])
+    return DataX[p], DataT[p]
+
 def accuracy(W,X,T):
     SIZE , D = X.shape
     yPred = np.dot(X, W)
@@ -22,7 +26,7 @@ def calculateLoss(W, DataX, DataT):
     totalLoss = 0          # Initialize total loss  
     yHat = sp.softmax(np.dot(DataX, W) - np.max(np.dot(DataX, W)), axis=1)  # Perform softmax mapping on computed probabilities for each class
     for i in range(SIZE):  # For loop to iterate through number of images
-        yHat[i] = np.interp(yHat[i], [0, 1], [.1, .99])     # Perform interpolation on yHat row to eliminate divide by zero error.
+        yHat[i] = np.interp(yHat[i], [0, 1], [1e-30, .99])     # Perform interpolation on yHat row to eliminate divide by zero error.
         loss = -1.0 * np.log(yHat[i][np.argmax(DataT[i])])  # Calculate loss, neglecting terms with 0 in T matrix since 0 * log(x) = 0 for computational simplicity
         totalLoss += loss                                   # Add loss for current image to total loss
     totalLoss /= float(SIZE)                                # Divide total loss by size of DataX (Number of Images)
@@ -30,15 +34,16 @@ def calculateLoss(W, DataX, DataT):
 
 # Gradient descent with momentum function to fit model
 def gradientDescent(DataX, DataT):
+    accuracyDict ={}
     start_time = time.time()  # Define start time
     M = DataX.shape[1]        # Define number of features (M) + 1 (785)
     K = DataT.shape[1]        # Define number of classes (K) (10)
     Beta = 0.9                # Define beta of 0.9
     prevgradient = 0          # Initialize previous gradient to 0
     W = np.random.rand((M),K) # Initialize weight matrix of size (785x10) to random values
-    maxEpochs = 100000          # Define max epochs (iterations) to 1000 
+    maxEpochs = 5000         # Define max epochs (iterations) to 1000 
     NE = 0                    # Initialize number of iterations to 0
-    LR = .001                  # Define learning rate of 0.1
+    LR = .000008                 # Define learning rate of 0.1
     for i in range(maxEpochs):  # For loop to iterate through epochs (iterations)
         temp1 = sp.softmax(np.dot(DataX, W) - np.max(np.dot(DataX, W)), axis=1)             # Define temp1 as softmax mapping of computed probalities with current weight matrix values
         gradient = np.dot(np.transpose(DataX), temp1) - np.dot(np.transpose(DataX), DataT)  # Calculate gradient
@@ -48,19 +53,21 @@ def gradientDescent(DataX, DataT):
         NE += 1                                                                             # Increment number of iterations by 1
         loss = calculateLoss(W, DataX, DataT)                                               # Calculate loss
         accuracyPercentage = accuracy(W, DataX, DataT)                                      # Calculate accuracy
+        accuracyDict[str(i)] = accuracyPercentage
         print("Epoch", NE,"- Accuracy (%) {0:.2f}" .format(accuracyPercentage), ", Loss {0:.2f}" .format(loss))  # Print Epochs, Accuracy, and Loss
-        
+        DataX, DataT = shuffleData(DataX, DataT)
+    print(max(accuracyDict, key=accuracyDict.get), max(accuracyDict.values()))
     total_time = time.time() - start_time                                                   # Define total time as current time - start time
     return W, NE, total_time                                                                # Return weight matrix, number of iterations, and total time taken
 
 
-data = np.load('DataX.npz')
+data = np.load('DataXResized.npz')
 
-DataX = data['arr_0']
+DataX = data['DataX']
 
-data = np.load('DataT.npz')
+data = np.load('DataTResized.npz')
 
-DataT = data['arr_0']
+DataT = data['DataT']
 
 print(DataX.shape)
 print(DataT.shape)
@@ -69,4 +76,3 @@ W , NE ,TT = gradientDescent(DataX, DataT)
 print("Amount of Time Taken: ", TT)
 
 np.savez_compressed('W_CElegans.npz', W = W)
-
