@@ -77,5 +77,7 @@ trainLoss = calculateLoss(W, DataXTrain, DataTTrain)                         # C
 trainAccuracy = calculateAccuracy(W, DataXTrain, DataTTrain)                 # Calculate training accuracy
 print('Training - Loss =', trainLoss, ", Accuracy (%) = ", trainAccuracy)    # Print training loss and accuracy
 testLoss = calculateLoss(W, DataXTest, DataTTest)                            # Calculate testing loss
+start_time = time.time()
 testAccuracy = calculateAccuracy(W, DataXTest, DataTTest)                    # Calculate testing accuracy
 print('Testing - Loss =', testLoss, ", Accuracy (%) = ", testAccuracy)            # Print testing loss and accuracy
+print("Testing Time",(time.time()-start_time))

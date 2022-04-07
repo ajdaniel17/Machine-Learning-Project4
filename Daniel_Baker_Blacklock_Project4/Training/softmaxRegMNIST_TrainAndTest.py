@@ -90,8 +90,10 @@ trainLoss = calculateLoss(trainedModel, imageDataMatrixTrain, TTrain)           
 trainAccuracy = calculateAccuracy(trainedModel, imageDataMatrixTrain, TTrain)     # Calculate training accuracy
 print('Training - Loss =', trainLoss, ", Accuracy (%) = ", trainAccuracy)         # Print training loss and accuracy
 testLoss = calculateLoss(trainedModel, imageDataMatrixTest, TTest)                # Calculate testing loss
+start_time = time.time()
 testAccuracy = calculateAccuracy(trainedModel, imageDataMatrixTest, TTest)        # Calculate testing accuracy
 print('Testing - Loss =', testLoss, ", Accuracy (%) = ", testAccuracy)            # Print testing loss and accuracy
+print("Testing Time",(time.time()-start_time))
 
 
 
