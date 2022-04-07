@@ -63,7 +63,7 @@ if filenamesCElegans:
     
 
 if filenamesMNIST:
-    imagesGrayscale = resizeAndConvertToGrayscale(filenamesMNIST)
+    imagesGrayscale = np.array(resizeAndConvertToGrayscale(filenamesMNIST))
 
     imagesLinearized = imagesGrayscale.reshape(imagesGrayscale.shape[0], imagesGrayscale.shape[1] * imagesGrayscale.shape[2])
 
