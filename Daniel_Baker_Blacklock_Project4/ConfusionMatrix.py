@@ -112,8 +112,8 @@ data = np.load('trainedModelMNIST.npz')
 W = data['x']
 
 
-imageTestFile = 'DataUncompressed/test-images.idx3-ubyte'  # Load Test Images File
-labelTestFile = 'DataUncompressed/test-labels.idx1-ubyte'  # Load Test Labels File
+imageTestFile = 'MNIST/DataUncompressed/test-images.idx3-ubyte'  # Load Test Images File
+labelTestFile = 'MNIST/DataUncompressed/test-labels.idx1-ubyte'  # Load Test Labels File
 
 
 imageTestArr = idx2numpy.convert_from_file(imageTestFile)  # Convert testing images to numpy arrays
